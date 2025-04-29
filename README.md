@@ -37,8 +37,8 @@ HomeSense is a secure, serverless smart home platform for monitoring and control
 
 ### 2. Clone and Install
 ```sh
-git clone <your-repo-url>
-cd adeep2/infrastructure
+git clone https://github.com/PustakP/HomeSense-AWS.git
+cd HomeSense_AWS/infrastructure
 npm install
 ```
 
@@ -97,4 +97,4 @@ curl <API_ENDPOINT>/devices
 /alexa            # Alexa skill config
 ```
 ---
-For detailed setup, see the README in each subdirectory. For support, open an issue or contact the maintainer.
+For detailed setup, see the README in each subdirectory.
