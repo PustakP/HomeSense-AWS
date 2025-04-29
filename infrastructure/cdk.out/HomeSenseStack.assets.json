@@ -1,0 +1,34 @@
+{
+  "version": "41.0.0",
+  "files": {
+    "7307b64199d7c334d93c31f021d673c381e0b6b9d586dc767188c871714778b3": {
+      "displayName": "IngestTelemetryFn/Code",
+      "source": {
+        "path": "asset.7307b64199d7c334d93c31f021d673c381e0b6b9d586dc767188c871714778b3",
+        "packaging": "zip"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "7307b64199d7c334d93c31f021d673c381e0b6b9d586dc767188c871714778b3.zip",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    },
+    "60a3478b2b904777657c7c9836dc45b4143f1957a822c2124013f9326a8bafff": {
+      "displayName": "HomeSenseStack Template",
+      "source": {
+        "path": "HomeSenseStack.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "60a3478b2b904777657c7c9836dc45b4143f1957a822c2124013f9326a8bafff.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

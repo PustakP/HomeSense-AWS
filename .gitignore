@@ -1,0 +1,57 @@
+# Node.js dependencies
+node_modules/
+
+# Environment files/secrets
+.env
+.env.*
+*.env
+
+# AWS/Azure credentials
+.aws/
+*.pem
+*.key
+*.crt
+*.p12
+*.pfx
+*.cer
+*.der
+*.jks
+*.azure/
+*.token
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Build output
+dist/
+build/
+coverage/
+
+# Misc
+*.tgz
+*.zip
+*.bak
+*.tmp
+
+# Ignore sensitive config (add more as needed)
+config/*.secret.*
+config/*.private.*
+
+# Ignore firmware binaries
+/firmware/*.bin
+/firmware/*.elf
+/firmware/*.hex

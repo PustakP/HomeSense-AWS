@@ -1,0 +1,19 @@
+{
+  "name": "homesense-infrastructure",
+  "version": "1.0.0",
+  "description": "AWS CDK app for HomeSense serverless infrastructure.",
+  "main": "app.ts",
+  "scripts": {
+    "build": "tsc",
+    "watch": "tsc -w",
+    "cdk": "cdk"
+  },
+  "dependencies": {
+    "aws-cdk-lib": "^2.135.0",
+    "aws-sdk": "^2.1692.0",
+    "constructs": "^10.3.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.4.0"
+  }
+}

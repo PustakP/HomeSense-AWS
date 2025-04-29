@@ -1,0 +1,974 @@
+{
+ "Resources": {
+  "DevicesTableD0A940EE": {
+   "Type": "AWS::DynamoDB::Table",
+   "Properties": {
+    "AttributeDefinitions": [
+     {
+      "AttributeName": "deviceId",
+      "AttributeType": "S"
+     }
+    ],
+    "BillingMode": "PAY_PER_REQUEST",
+    "KeySchema": [
+     {
+      "AttributeName": "deviceId",
+      "KeyType": "HASH"
+     }
+    ],
+    "SSESpecification": {
+     "SSEEnabled": true
+    }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete",
+   "Metadata": {
+    "aws:cdk:path": "HomeSenseStack/DevicesTable/Resource"
+   }
+  },
+  "LogsTable2E519967": {
+   "Type": "AWS::DynamoDB::Table",
+   "Properties": {
+    "AttributeDefinitions": [
+     {
+      "AttributeName": "logId",
+      "AttributeType": "S"
+     }
+    ],
+    "BillingMode": "PAY_PER_REQUEST",
+    "KeySchema": [
+     {
+      "AttributeName": "logId",
+      "KeyType": "HASH"
+     }
+    ],
+    "SSESpecification": {
+     "SSEEnabled": true
+    }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete",
+   "Metadata": {
+    "aws:cdk:path": "HomeSenseStack/LogsTable/Resource"
+   }
+  },
+  "AlertTopic2720D535": {
+   "Type": "AWS::SNS::Topic",
+   "Properties": {
+    "DisplayName": "HomeSense Alerts"
+   },
+   "Metadata": {
+    "aws:cdk:path": "HomeSenseStack/AlertTopic/Resource"
+   }
+  },
+  "HomeSenseUserPool6EB0B794": {
+   "Type": "AWS::Cognito::UserPool",
+   "Properties": {
+    "AccountRecoverySetting": {
+     "RecoveryMechanisms": [
+      {
+       "Name": "verified_phone_number",
+       "Priority": 1
+      },
+      {
+       "Name": "verified_email",
+       "Priority": 2
+      }
+     ]
+    },
+    "AdminCreateUserConfig": {
+     "AllowAdminCreateUserOnly": false
+    },
+    "AutoVerifiedAttributes": [
+     "email"
+    ],
+    "EmailVerificationMessage": "The verification code to your new account is {####}",
+    "EmailVerificationSubject": "Verify your new account",
+    "Schema": [
+     {
+      "Mutable": false,
+      "Name": "email",
+      "Required": true
+     }
+    ],
+    "SmsVerificationMessage": "The verification code to your new account is {####}",
+    "UsernameAttributes": [
+     "email"
+    ],
+    "VerificationMessageTemplate": {
+     "DefaultEmailOption": "CONFIRM_WITH_CODE",
+     "EmailMessage": "The verification code to your new account is {####}",
+     "EmailSubject": "Verify your new account",
+     "SmsMessage": "The verification code to your new account is {####}"
+    }
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain",
+   "Metadata": {
+    "aws:cdk:path": "HomeSenseStack/HomeSenseUserPool/Resource"
+   }
+  },
+  "HomeSenseUserPoolClient4CD0757D": {
+   "Type": "AWS::Cognito::UserPoolClient",
+   "Properties": {
+    "AllowedOAuthFlows": [
+     "code"
+    ],
+    "AllowedOAuthFlowsUserPoolClient": true,
+    "AllowedOAuthScopes": [
+     "email",
+     "openid",
+     "profile"
+    ],
+    "CallbackURLs": [
+     "http://localhost:3000/"
+    ],
+    "ExplicitAuthFlows": [
+     "ALLOW_USER_PASSWORD_AUTH",
+     "ALLOW_USER_SRP_AUTH",
+     "ALLOW_REFRESH_TOKEN_AUTH"
+    ],
+    "GenerateSecret": false,
+    "SupportedIdentityProviders": [
+     "COGNITO"
+    ],
+    "UserPoolId": {
+     "Ref": "HomeSenseUserPool6EB0B794"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "HomeSenseStack/HomeSenseUserPoolClient/Resource"
+   }
+  },
+  "DeviceIoTPolicy": {
+   "Type": "AWS::IoT::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Version": "2012-10-17",
+     "Statement": [
+      {
+       "Effect": "Allow",
+       "Action": [
+        "iot:Connect",
+        "iot:Publish",
+        "iot:Subscribe",
+        "iot:Receive"
+       ],
+       "Resource": "*"
+      }
+     ]
+    },
+    "PolicyName": "HomeSenseDevicePolicy"
+   },
+   "Metadata": {
+    "aws:cdk:path": "HomeSenseStack/DeviceIoTPolicy"
+   }
+  },
+  "IngestTelemetryFnServiceRole90632B85": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+       ]
+      ]
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "HomeSenseStack/IngestTelemetryFn/ServiceRole/Resource"
+   }
+  },
+  "IngestTelemetryFnServiceRoleDefaultPolicy665FC0C0": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "dynamodb:BatchWriteItem",
+        "dynamodb:PutItem",
+        "dynamodb:UpdateItem",
+        "dynamodb:DeleteItem",
+        "dynamodb:DescribeTable"
+       ],
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "DevicesTableD0A940EE",
+          "Arn"
+         ]
+        },
+        {
+         "Ref": "AWS::NoValue"
+        }
+       ]
+      },
+      {
+       "Action": [
+        "dynamodb:BatchWriteItem",
+        "dynamodb:PutItem",
+        "dynamodb:UpdateItem",
+        "dynamodb:DeleteItem",
+        "dynamodb:DescribeTable"
+       ],
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "LogsTable2E519967",
+          "Arn"
+         ]
+        },
+        {
+         "Ref": "AWS::NoValue"
+        }
+       ]
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "IngestTelemetryFnServiceRoleDefaultPolicy665FC0C0",
+    "Roles": [
+     {
+      "Ref": "IngestTelemetryFnServiceRole90632B85"
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "HomeSenseStack/IngestTelemetryFn/ServiceRole/DefaultPolicy/Resource"
+   }
+  },
+  "IngestTelemetryFn3B0B7BF0": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "S3Bucket": {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+     },
+     "S3Key": "7307b64199d7c334d93c31f021d673c381e0b6b9d586dc767188c871714778b3.zip"
+    },
+    "Environment": {
+     "Variables": {
+      "DEVICES_TABLE": {
+       "Ref": "DevicesTableD0A940EE"
+      },
+      "LOGS_TABLE": {
+       "Ref": "LogsTable2E519967"
+      }
+     }
+    },
+    "Handler": "ingestTelemetry.handler",
+    "Role": {
+     "Fn::GetAtt": [
+      "IngestTelemetryFnServiceRole90632B85",
+      "Arn"
+     ]
+    },
+    "Runtime": "nodejs18.x"
+   },
+   "DependsOn": [
+    "IngestTelemetryFnServiceRoleDefaultPolicy665FC0C0",
+    "IngestTelemetryFnServiceRole90632B85"
+   ],
+   "Metadata": {
+    "aws:cdk:path": "HomeSenseStack/IngestTelemetryFn/Resource",
+    "aws:asset:path": "asset.7307b64199d7c334d93c31f021d673c381e0b6b9d586dc767188c871714778b3",
+    "aws:asset:is-bundled": false,
+    "aws:asset:property": "Code"
+   }
+  },
+  "HomeSenseApi2D581ACC": {
+   "Type": "AWS::ApiGateway::RestApi",
+   "Properties": {
+    "Name": "HomeSense Service"
+   },
+   "Metadata": {
+    "aws:cdk:path": "HomeSenseStack/HomeSenseApi/Resource"
+   }
+  },
+  "HomeSenseApiCloudWatchRoleC00B48A7": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "apigateway.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AmazonAPIGatewayPushToCloudWatchLogs"
+       ]
+      ]
+     }
+    ]
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain",
+   "Metadata": {
+    "aws:cdk:path": "HomeSenseStack/HomeSenseApi/CloudWatchRole/Resource"
+   }
+  },
+  "HomeSenseApiAccountF3CA28DC": {
+   "Type": "AWS::ApiGateway::Account",
+   "Properties": {
+    "CloudWatchRoleArn": {
+     "Fn::GetAtt": [
+      "HomeSenseApiCloudWatchRoleC00B48A7",
+      "Arn"
+     ]
+    }
+   },
+   "DependsOn": [
+    "HomeSenseApi2D581ACC"
+   ],
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain",
+   "Metadata": {
+    "aws:cdk:path": "HomeSenseStack/HomeSenseApi/Account"
+   }
+  },
+  "HomeSenseApiDeployment0FD2D91A05fcbd5f5f6c496736ad8a67036936d0": {
+   "Type": "AWS::ApiGateway::Deployment",
+   "Properties": {
+    "Description": "Automatically created by the RestApi construct",
+    "RestApiId": {
+     "Ref": "HomeSenseApi2D581ACC"
+    }
+   },
+   "DependsOn": [
+    "HomeSenseApidevicesGET782E4D5D",
+    "HomeSenseApidevicesOPTIONSB271C6D6",
+    "HomeSenseApidevicesE0723455",
+    "HomeSenseApiOPTIONSDA43A94C"
+   ],
+   "Metadata": {
+    "aws:cdk:path": "HomeSenseStack/HomeSenseApi/Deployment/Resource"
+   }
+  },
+  "HomeSenseApiDeploymentStageprod97FA5552": {
+   "Type": "AWS::ApiGateway::Stage",
+   "Properties": {
+    "DeploymentId": {
+     "Ref": "HomeSenseApiDeployment0FD2D91A05fcbd5f5f6c496736ad8a67036936d0"
+    },
+    "RestApiId": {
+     "Ref": "HomeSenseApi2D581ACC"
+    },
+    "StageName": "prod"
+   },
+   "DependsOn": [
+    "HomeSenseApiAccountF3CA28DC"
+   ],
+   "Metadata": {
+    "aws:cdk:path": "HomeSenseStack/HomeSenseApi/DeploymentStage.prod/Resource"
+   }
+  },
+  "HomeSenseApiOPTIONSDA43A94C": {
+   "Type": "AWS::ApiGateway::Method",
+   "Properties": {
+    "ApiKeyRequired": false,
+    "AuthorizationType": "NONE",
+    "HttpMethod": "OPTIONS",
+    "Integration": {
+     "IntegrationResponses": [
+      {
+       "ResponseParameters": {
+        "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,X-Amz-User-Agent'",
+        "method.response.header.Access-Control-Allow-Origin": "'*'",
+        "method.response.header.Access-Control-Allow-Methods": "'OPTIONS,GET,PUT,POST,DELETE,PATCH,HEAD'"
+       },
+       "StatusCode": "204"
+      }
+     ],
+     "RequestTemplates": {
+      "application/json": "{ statusCode: 200 }"
+     },
+     "Type": "MOCK"
+    },
+    "MethodResponses": [
+     {
+      "ResponseParameters": {
+       "method.response.header.Access-Control-Allow-Headers": true,
+       "method.response.header.Access-Control-Allow-Origin": true,
+       "method.response.header.Access-Control-Allow-Methods": true
+      },
+      "StatusCode": "204"
+     }
+    ],
+    "ResourceId": {
+     "Fn::GetAtt": [
+      "HomeSenseApi2D581ACC",
+      "RootResourceId"
+     ]
+    },
+    "RestApiId": {
+     "Ref": "HomeSenseApi2D581ACC"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "HomeSenseStack/HomeSenseApi/Default/OPTIONS/Resource"
+   }
+  },
+  "HomeSenseApidevicesE0723455": {
+   "Type": "AWS::ApiGateway::Resource",
+   "Properties": {
+    "ParentId": {
+     "Fn::GetAtt": [
+      "HomeSenseApi2D581ACC",
+      "RootResourceId"
+     ]
+    },
+    "PathPart": "devices",
+    "RestApiId": {
+     "Ref": "HomeSenseApi2D581ACC"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "HomeSenseStack/HomeSenseApi/Default/devices/Resource"
+   }
+  },
+  "HomeSenseApidevicesOPTIONSB271C6D6": {
+   "Type": "AWS::ApiGateway::Method",
+   "Properties": {
+    "ApiKeyRequired": false,
+    "AuthorizationType": "NONE",
+    "HttpMethod": "OPTIONS",
+    "Integration": {
+     "IntegrationResponses": [
+      {
+       "ResponseParameters": {
+        "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,X-Amz-User-Agent'",
+        "method.response.header.Access-Control-Allow-Origin": "'*'",
+        "method.response.header.Access-Control-Allow-Methods": "'OPTIONS,GET,PUT,POST,DELETE,PATCH,HEAD'"
+       },
+       "StatusCode": "204"
+      }
+     ],
+     "RequestTemplates": {
+      "application/json": "{ statusCode: 200 }"
+     },
+     "Type": "MOCK"
+    },
+    "MethodResponses": [
+     {
+      "ResponseParameters": {
+       "method.response.header.Access-Control-Allow-Headers": true,
+       "method.response.header.Access-Control-Allow-Origin": true,
+       "method.response.header.Access-Control-Allow-Methods": true
+      },
+      "StatusCode": "204"
+     }
+    ],
+    "ResourceId": {
+     "Ref": "HomeSenseApidevicesE0723455"
+    },
+    "RestApiId": {
+     "Ref": "HomeSenseApi2D581ACC"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "HomeSenseStack/HomeSenseApi/Default/devices/OPTIONS/Resource"
+   }
+  },
+  "HomeSenseApidevicesGETApiPermissionHomeSenseStackHomeSenseApiC8C553B2GETdevicesC7B2B1EF": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "IngestTelemetryFn3B0B7BF0",
+      "Arn"
+     ]
+    },
+    "Principal": "apigateway.amazonaws.com",
+    "SourceArn": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:",
+       {
+        "Ref": "AWS::Partition"
+       },
+       ":execute-api:",
+       {
+        "Ref": "AWS::Region"
+       },
+       ":",
+       {
+        "Ref": "AWS::AccountId"
+       },
+       ":",
+       {
+        "Ref": "HomeSenseApi2D581ACC"
+       },
+       "/",
+       {
+        "Ref": "HomeSenseApiDeploymentStageprod97FA5552"
+       },
+       "/GET/devices"
+      ]
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "HomeSenseStack/HomeSenseApi/Default/devices/GET/ApiPermission.HomeSenseStackHomeSenseApiC8C553B2.GET..devices"
+   }
+  },
+  "HomeSenseApidevicesGETApiPermissionTestHomeSenseStackHomeSenseApiC8C553B2GETdevices3CCCE593": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "IngestTelemetryFn3B0B7BF0",
+      "Arn"
+     ]
+    },
+    "Principal": "apigateway.amazonaws.com",
+    "SourceArn": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:",
+       {
+        "Ref": "AWS::Partition"
+       },
+       ":execute-api:",
+       {
+        "Ref": "AWS::Region"
+       },
+       ":",
+       {
+        "Ref": "AWS::AccountId"
+       },
+       ":",
+       {
+        "Ref": "HomeSenseApi2D581ACC"
+       },
+       "/test-invoke-stage/GET/devices"
+      ]
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "HomeSenseStack/HomeSenseApi/Default/devices/GET/ApiPermission.Test.HomeSenseStackHomeSenseApiC8C553B2.GET..devices"
+   }
+  },
+  "HomeSenseApidevicesGET782E4D5D": {
+   "Type": "AWS::ApiGateway::Method",
+   "Properties": {
+    "AuthorizationType": "NONE",
+    "HttpMethod": "GET",
+    "Integration": {
+     "IntegrationHttpMethod": "POST",
+     "Type": "AWS_PROXY",
+     "Uri": {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":apigateway:",
+        {
+         "Ref": "AWS::Region"
+        },
+        ":lambda:path/2015-03-31/functions/",
+        {
+         "Fn::GetAtt": [
+          "IngestTelemetryFn3B0B7BF0",
+          "Arn"
+         ]
+        },
+        "/invocations"
+       ]
+      ]
+     }
+    },
+    "ResourceId": {
+     "Ref": "HomeSenseApidevicesE0723455"
+    },
+    "RestApiId": {
+     "Ref": "HomeSenseApi2D581ACC"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "HomeSenseStack/HomeSenseApi/Default/devices/GET/Resource"
+   }
+  },
+  "CDKMetadata": {
+   "Type": "AWS::CDK::Metadata",
+   "Properties": {
+    "Analytics": "v2:deflate64:H4sIAAAAAAAA/02PzW7CMBCEn4W72RaQKvUIVL1VRYGekeMs6ULijbKbosjyu1dxws9pP8/Ys+MlLN6X8DqzV5m74jKvKIewV+suxl7lGIre25qLHMLB5hWa7ckniEa8QDhwQy6JA0TjuPSkDOFHsN0xV4N35xtsK0Kvz9aoREOssD35HVfkelPZOi8shM/OOyX2w4tn3mFbkwixj4ZsDSHjsWKaU8g9LhpZHa0IqsB6GEZWsOncBXVjBY1tqLSKV9tDyFB03VDKeuDaOe68mg9sKu7r6Q9Pp73aMhUYIUPhrnWY4r9Qf7kYzIlu7rQkcYwPOXUcgsiXw53vTptOo/FcIJzl5W+5gDdYzM5CNG87r1QjZOP8B4dSbifXAQAA"
+   },
+   "Metadata": {
+    "aws:cdk:path": "HomeSenseStack/CDKMetadata/Default"
+   },
+   "Condition": "CDKMetadataAvailable"
+  }
+ },
+ "Outputs": {
+  "HomeSenseApiEndpointA75D7E30": {
+   "Value": {
+    "Fn::Join": [
+     "",
+     [
+      "https://",
+      {
+       "Ref": "HomeSenseApi2D581ACC"
+      },
+      ".execute-api.",
+      {
+       "Ref": "AWS::Region"
+      },
+      ".",
+      {
+       "Ref": "AWS::URLSuffix"
+      },
+      "/",
+      {
+       "Ref": "HomeSenseApiDeploymentStageprod97FA5552"
+      },
+      "/"
+     ]
+    ]
+   }
+  }
+ },
+ "Conditions": {
+  "CDKMetadataAvailable": {
+   "Fn::Or": [
+    {
+     "Fn::Or": [
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "af-south-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "ap-east-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "ap-northeast-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "ap-northeast-2"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "ap-northeast-3"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "ap-south-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "ap-south-2"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "ap-southeast-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "ap-southeast-2"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "ap-southeast-3"
+       ]
+      }
+     ]
+    },
+    {
+     "Fn::Or": [
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "ap-southeast-4"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "ca-central-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "ca-west-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "cn-north-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "cn-northwest-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "eu-central-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "eu-central-2"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "eu-north-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "eu-south-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "eu-south-2"
+       ]
+      }
+     ]
+    },
+    {
+     "Fn::Or": [
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "eu-west-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "eu-west-2"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "eu-west-3"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "il-central-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "me-central-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "me-south-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "sa-east-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "us-east-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "us-east-2"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "us-west-1"
+       ]
+      }
+     ]
+    },
+    {
+     "Fn::Equals": [
+      {
+       "Ref": "AWS::Region"
+      },
+      "us-west-2"
+     ]
+    }
+   ]
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

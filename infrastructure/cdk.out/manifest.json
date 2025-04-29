@@ -1,0 +1,198 @@
+{
+  "version": "41.0.0",
+  "artifacts": {
+    "HomeSenseStack.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "HomeSenseStack.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "HomeSenseStack": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "HomeSenseStack.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/60a3478b2b904777657c7c9836dc45b4143f1957a822c2124013f9326a8bafff.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "HomeSenseStack.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "HomeSenseStack.assets"
+      ],
+      "metadata": {
+        "/HomeSenseStack/DevicesTable/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DevicesTableD0A940EE"
+          }
+        ],
+        "/HomeSenseStack/LogsTable/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LogsTable2E519967"
+          }
+        ],
+        "/HomeSenseStack/AlertTopic/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AlertTopic2720D535"
+          }
+        ],
+        "/HomeSenseStack/HomeSenseUserPool/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "HomeSenseUserPool6EB0B794"
+          }
+        ],
+        "/HomeSenseStack/HomeSenseUserPoolClient/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "HomeSenseUserPoolClient4CD0757D"
+          }
+        ],
+        "/HomeSenseStack/DeviceIoTPolicy": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DeviceIoTPolicy"
+          }
+        ],
+        "/HomeSenseStack/IngestTelemetryFn/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "IngestTelemetryFnServiceRole90632B85"
+          }
+        ],
+        "/HomeSenseStack/IngestTelemetryFn/ServiceRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "IngestTelemetryFnServiceRoleDefaultPolicy665FC0C0"
+          }
+        ],
+        "/HomeSenseStack/IngestTelemetryFn/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "IngestTelemetryFn3B0B7BF0"
+          }
+        ],
+        "/HomeSenseStack/HomeSenseApi/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "HomeSenseApi2D581ACC"
+          }
+        ],
+        "/HomeSenseStack/HomeSenseApi/CloudWatchRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "HomeSenseApiCloudWatchRoleC00B48A7"
+          }
+        ],
+        "/HomeSenseStack/HomeSenseApi/Account": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "HomeSenseApiAccountF3CA28DC"
+          }
+        ],
+        "/HomeSenseStack/HomeSenseApi/Deployment/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "HomeSenseApiDeployment0FD2D91A05fcbd5f5f6c496736ad8a67036936d0"
+          }
+        ],
+        "/HomeSenseStack/HomeSenseApi/DeploymentStage.prod/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "HomeSenseApiDeploymentStageprod97FA5552"
+          }
+        ],
+        "/HomeSenseStack/HomeSenseApi/Endpoint": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "HomeSenseApiEndpointA75D7E30"
+          }
+        ],
+        "/HomeSenseStack/HomeSenseApi/Default/OPTIONS/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "HomeSenseApiOPTIONSDA43A94C"
+          }
+        ],
+        "/HomeSenseStack/HomeSenseApi/Default/devices/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "HomeSenseApidevicesE0723455"
+          }
+        ],
+        "/HomeSenseStack/HomeSenseApi/Default/devices/OPTIONS/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "HomeSenseApidevicesOPTIONSB271C6D6"
+          }
+        ],
+        "/HomeSenseStack/HomeSenseApi/Default/devices/GET/ApiPermission.HomeSenseStackHomeSenseApiC8C553B2.GET..devices": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "HomeSenseApidevicesGETApiPermissionHomeSenseStackHomeSenseApiC8C553B2GETdevicesC7B2B1EF"
+          }
+        ],
+        "/HomeSenseStack/HomeSenseApi/Default/devices/GET/ApiPermission.Test.HomeSenseStackHomeSenseApiC8C553B2.GET..devices": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "HomeSenseApidevicesGETApiPermissionTestHomeSenseStackHomeSenseApiC8C553B2GETdevices3CCCE593"
+          }
+        ],
+        "/HomeSenseStack/HomeSenseApi/Default/devices/GET/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "HomeSenseApidevicesGET782E4D5D"
+          }
+        ],
+        "/HomeSenseStack/CDKMetadata/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CDKMetadata"
+          }
+        ],
+        "/HomeSenseStack/CDKMetadata/Condition": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CDKMetadataAvailable"
+          }
+        ],
+        "/HomeSenseStack/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/HomeSenseStack/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "HomeSenseStack"
+    },
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    }
+  },
+  "minimumCliVersion": "2.1005.0"
+}

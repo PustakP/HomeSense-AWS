@@ -1,0 +1,27 @@
+{
+  "manifest": {
+    "publishingInformation": {
+      "locales": {
+        "en-US": {
+          "summary": "Control and monitor your smart home devices with HomeSense.",
+          "examplePhrases": [
+            "Alexa, ask HomeSense to turn on the living room lights",
+            "Alexa, ask HomeSense for the thermostat status"
+          ],
+          "name": "HomeSense",
+          "description": "Monitor and control lights, thermostat, locks, and sensors via Alexa."
+        }
+      },
+      "isAvailableWorldwide": true,
+      "testingInstructions": "Test device control and status queries."
+    },
+    "apis": {
+      "custom": {
+        "endpoint": {
+          "uri": "arn:aws:lambda:YOUR_REGION:YOUR_ACCOUNT:function:homesenseAlexaHandler"
+        }
+      }
+    },
+    "manifestVersion": "1.0"
+  }
+}
