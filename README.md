@@ -26,6 +26,19 @@ HomeSense is a secure, serverless smart home platform for monitoring and control
 - **Alexa Skill:** Voice integration
 - **Frontend:** Next.js (React, Amplify)
 
+## Credentials & Environment Variables
+
+This project uses environment variables for AWS, Cognito, and API endpoints. **Do NOT commit real secrets.**
+
+- Copy `.env.sample` to `.env` in the project root and fill in your credentials.
+- For the frontend, copy `frontend/.env.sample` to `frontend/.env.local` and fill in your frontend-specific variables.
+
+### Sample Credential Files
+- `.env.sample` (project root): Example for backend, AWS, and API credentials
+- `frontend/.env.sample`: Example for frontend Next.js/Amplify credentials
+
+See each sample file for required keys and example values.
+
 ## Quick Start
 
 ### 1. Prerequisites
@@ -34,11 +47,17 @@ HomeSense is a secure, serverless smart home platform for monitoring and control
 - AWS CDK (`npm install -g aws-cdk`)
 - Python 3.x (for some Lambda/test scripts)
 - (Optional) ESP32/Arduino hardware
+- **Environment variables:** `.env` and `frontend/.env.local` (see above)
 
 ### 2. Clone and Install
 ```sh
 git clone https://github.com/PustakP/HomeSense-AWS.git
-cd HomeSense_AWS/infrastructure
+cd HomeSense-AWS
+cp .env.sample .env
+cd frontend
+cp .env.sample .env.local
+npm install
+cd ../infrastructure
 npm install
 ```
 
@@ -54,6 +73,7 @@ cdk deploy
 ```sh
 curl <API_ENDPOINT>/devices
 ```
+Or use Postman/Insomnia. Ensure your `.env` and `frontend/.env.local` are set up with correct endpoints and credentials.
 
 ### 5. Device Firmware (ESP32 Example)
 - See `/firmware/esp32_sample.cpp`
@@ -63,6 +83,12 @@ curl <API_ENDPOINT>/devices
 ### 6. Web Dashboard
 - See `/frontend/README.md`
 - Next.js app with Amplify Auth, device dashboard, automation UI
+- Start with:
+  ```sh
+  cd frontend
+  npm run dev
+  ```
+  The app will use credentials from `frontend/.env.local`.
 
 ### 7. Alexa Skill
 - See `/alexa/skill.json`
@@ -85,6 +111,7 @@ curl <API_ENDPOINT>/devices
 
 ## Troubleshooting
 - If `cdk deploy` fails, check AWS credentials and region
+- Ensure your `.env` and `frontend/.env.local` files are present and valid
 - Use `cdk destroy` to remove all resources
 - Check CloudWatch logs for Lambda/API errors
 
@@ -95,6 +122,33 @@ curl <API_ENDPOINT>/devices
 /services         # Lambda handlers
 /frontend         # Next.js dashboard
 /alexa            # Alexa skill config
+.env.sample       # Sample environment for backend/API
+/frontend/.env.sample # Sample environment for frontend
 ```
 ---
 For detailed setup, see the README in each subdirectory.
+
+## Sample Environment Files
+
+### .env.sample (root)
+```
+AWS_ACCESS_KEY_ID=YOUR_AWS_ACCESS_KEY_ID
+AWS_SECRET_ACCESS_KEY=YOUR_AWS_SECRET_ACCESS_KEY
+AWS_REGION=us-east-1
+COGNITO_USER_POOL_ID=us-east-1_example
+COGNITO_CLIENT_ID=exampleclientid
+API_ENDPOINT=https://your-api-id.execute-api.us-east-1.amazonaws.com/prod
+AMPLIFY_AUTH_REGION=us-east-1
+AMPLIFY_USER_POOL_ID=us-east-1_example
+AMPLIFY_USER_POOL_WEB_CLIENT_ID=exampleclientid
+```
+
+### frontend/.env.sample
+```
+NEXT_PUBLIC_API_ENDPOINT=https://your-api-id.execute-api.us-east-1.amazonaws.com/prod
+NEXT_PUBLIC_COGNITO_USER_POOL_ID=us-east-1_example
+NEXT_PUBLIC_COGNITO_CLIENT_ID=exampleclientid
+NEXT_PUBLIC_AWS_REGION=us-east-1
+```
+
+Copy these to `.env` and `frontend/.env.local` and fill in your real credentials before running or testing the project.

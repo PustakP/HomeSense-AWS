@@ -1,9 +1,12 @@
 # Node.js dependencies
 node_modules/
+.next
 
 # Environment files/secrets
 .env
-.env.*
+# Allow sample env files
+!.env.sample
+!.env.*.sample
 *.env
 
 # AWS/Azure credentials
